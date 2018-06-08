@@ -13,6 +13,7 @@ class Alert(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     search_phrase = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('user','search_phrase')
