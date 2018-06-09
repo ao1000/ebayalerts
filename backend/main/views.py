@@ -9,6 +9,7 @@ from ebaysdk.finding import Connection
 import pprint
 from django.db import IntegrityError
 from django.db import transaction
+from .celery import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -24,6 +25,12 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             traceback.print_exc()
             return Response({"error": "User not found"},status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    @list_route(methods=['GET'],url_path="test")
+    def test(self,request):
+        send_email.delay()
+        return Response("Celery signal dispatched")
+
 
 class AlertViewSet(viewsets.ModelViewSet):
     queryset = Alert.objects.select_related("user")
