@@ -12,29 +12,31 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Http from '../services/http'
 
 export default class MyAlertsComponent extends Component {
   constructor(props){
     super(props);
+    this.data = [];
+    this.state = { "data" : [] };
+    this.http = new Http();
+    this.user = JSON.parse(localStorage.getItem("user"));
+    this.getAlerts();
+  }
+
+   getAlerts(){
+    this.http.myAlerts(this.user.id).then(
+      (data) => {
+        this.setState({"data" : data }) ;
+        //console.log(this.state.data);
+      }
+    )
+    //this.setState( {"data": await this.http.myAlerts(this.user.id)} );
   }
 
   render(){
-    const data = [
-      {
-        name: "Red Tea",
-        calories: 10,
-        fat: 2,
-        carbs: 8,
-        protein: 2
-      },
-      {
-        name: "Mozzerela",
-        calories: 100,
-        fat: 50,
-        carbs: 30,
-        protein: 20
-      },
-    ]
+    //var data = this.getAlerts();
+    //this.getAlerts();
 
 
     const classes = this.props;
@@ -44,24 +46,22 @@ export default class MyAlertsComponent extends Component {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell numeric>Calories</TableCell>
-                <TableCell numeric>Fat (g)</TableCell>
-                <TableCell numeric>Carbs (g)</TableCell>
-                <TableCell numeric>Protein (g)</TableCell>
+                <TableCell>{"Search Phrase"}</TableCell>
+                <TableCell numeric>{"Create Date"}</TableCell>
+                <TableCell numeric>{"Interval"}</TableCell>
+                <TableCell numeric>{"Active"}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map(n => {
+              {this.state.data.map(item => {
                 return (
-                  <TableRow key={n.id}>
+                  <TableRow key={item.id}>
                     <TableCell component="th" scope="row">
-                      {n.name}
+                      {item.search_phrase}
                     </TableCell>
-                    <TableCell numeric>{n.calories}</TableCell>
-                    <TableCell numeric>{n.fat}</TableCell>
-                    <TableCell numeric>{n.carbs}</TableCell>
-                    <TableCell numeric>{n.protein}</TableCell>
+                    <TableCell numeric>{item.date_created}</TableCell>
+                    <TableCell numeric>{item.interval}</TableCell>
+                    <TableCell numeric>{item.interval ? "Yes" : "No"}</TableCell>
                   </TableRow>
                 );
               })}

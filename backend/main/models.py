@@ -14,6 +14,7 @@ class Alert(models.Model):
     search_phrase = models.TextField()
     date_created = models.DateTimeField(default=timezone.now)
     is_active = models.BooleanField(default=True)
+    interval = models.PositiveIntegerField(null=False)
 
     class Meta:
         unique_together = ('user','search_phrase')

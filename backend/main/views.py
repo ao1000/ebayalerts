@@ -26,16 +26,16 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({"error": "User not found"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class AlertViewSet(viewsets.ModelViewSet):
-    queryset = Alert.objects.all()
+    queryset = Alert.objects.select_related("user")
     serializer_class = AlertSerializer
 
     # Override create function to produce better errors:
     @transaction.atomic
     def create(self,request):
         try:
-            #return super(UserViewSet,self).create(request)
-            alert_obj = super(AlertViewSet,self).create(request)
+            return super(AlertViewSet,self).create(request)
             # make sure at least one result is returned by api call
+            """
             api = Connection(domain="svcs.sandbox.ebay.com", appid='AousOmra-alerts-SBX-467ac8c8b-7db12fb6', config_file=None)
             response = api.execute('findItemsByKeywords', {
                                            'keywords' : 'Laptop',
@@ -48,22 +48,26 @@ class AlertViewSet(viewsets.ModelViewSet):
             print("count is: {}".format(len(response.reply.searchResult.item)))
             pprint.pprint(response.reply.searchResult.item[0])
             return Response(response.dict()['searchResult']['item'],status=status.HTTP_200_OK)
+            """
         except IntegrityError as ie:
+            traceback.print_exc()
             return Response("You have already created an alert with this search phrase",status=status.HTTP_406_NOT_ACCEPTABLE)
-        except ConnectionError as ce:
-            print("#####################")
-            print("Connection error")
-            print("#####################")
-            raise Exception(ce)
+        # except ConnectionError as ce:
+        #     print("#####################")
+        #     print("Connection error")
+        #     print("#####################")
+        #     traceback.print_exc()
+        #     raise Exception(ce)
         except Exception as e:
+            traceback.print_exc()
             return Response(e.__str__(),status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    @list_route(methods=['GET'],url_path="myalerts/(d+)")
+    @list_route(methods=['GET'],url_path="myalerts/(.*)")
     def myalerts(self,request,user_id):
         try:
             assert user_id, "User not provided"
-            queryset = self.queryset.filter(user_id=user_id)
-            serializer = self.serializer_class(queryset,many=True)
+            queryset = self.get_queryset().filter(user_id=user_id)
+            serializer = self.get_serializer(queryset,many=True)
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": e.__str__()},status=status.HTTP_406_NOT_ACCEPTABLE)

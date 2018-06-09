@@ -9,18 +9,23 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from "@material-ui/core/Grid";
 import MenuItem from '@material-ui/core/MenuItem';
+import Http from '../services/http';
 
 export default class AddAlertComponent extends Component {
   constructor(props){
     super(props);
+    this.http = new Http();
+    this.user = JSON.parse(localStorage.getItem("user"));
     this.state = {
-      "search" : "",
+      "search_phrase" : "",
       "interval" : 0,
+      "user_id": this.user.id
     }
   }
 
-  postAlert(){
-    console.log(this.state);
+  async postAlert(){
+    var result = await this.http.addAlert(this.state);
+    console.log(result);
   }
 
   render(){
@@ -34,7 +39,7 @@ export default class AddAlertComponent extends Component {
                   id="search"
                   label="Search eBay Products"
                   value={this.state.search}
-                  onChange = {e => this.setState({"search":e.target.value})}
+                  onChange = {e => this.setState({"search_phrase":e.target.value})}
                   className={classes.textField}
                   margin="normal"
                 />
