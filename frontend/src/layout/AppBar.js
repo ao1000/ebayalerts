@@ -35,6 +35,9 @@ const styles = {
 };
 
 export default class AppBarComponent extends React.Component {
+  constructor(props){
+    super(props);
+  }
   state = {
     anchorEl: null,
     drawer_open: false
@@ -56,13 +59,13 @@ export default class AppBarComponent extends React.Component {
       this.setState({'drawer_open': !this.state.drawer_open});
   }
 
+
   render() {
     const classes = this.props;
     const { anchorEl } = this.state;
     const auth = this.props.auth;
     const open = Boolean(anchorEl);
 
-    if(auth){
       return (
           <div className={classes.root}>
             <AppBar position="static">
@@ -76,22 +79,18 @@ export default class AppBarComponent extends React.Component {
             </AppBar>
             <Drawer open={this.state.drawer_open} onClose={e=>this.setState({'drawer_open':false})}>
             <List component="nav">
-                <Link to="/">
-                  <ListItem button><ListItemText primary="Login" /></ListItem>
-                </Link>
                 <Link to="/addalert">
                   <ListItem button><ListItemText primary="Add Alert" /></ListItem>
                 </Link>
                 <Link to="/myalerts">
                   <ListItem button><ListItemText primary="My Alerts" /></ListItem>
                 </Link>
+                <ListItem button onClick={e=>this.props.logout()}><ListItemText primary="Logout" /></ListItem>
+
             </List>
             </Drawer>
         </div>
       );
-    }else {
-      return('');
-    }
 
   }
 }

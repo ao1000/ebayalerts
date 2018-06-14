@@ -21,7 +21,7 @@ export default class LoginComponent extends Component {
     if(ls){
       ls = JSON.parse(ls);
       if(ls.id && ls.email){
-        this.history.push('/myalerts');
+        this.props.history.push('/myalerts');
       }
     }
   }
@@ -46,7 +46,7 @@ export default class LoginComponent extends Component {
   render(){
     const classes  = this.props;
     return (
-        <Grid container justify="center" alignItems="center">
+        <Grid container className={classes.root} justify="center" alignItems="center" spacing={16}>
           <Grid item xs={6}>
             <Card>
               <CardContent>

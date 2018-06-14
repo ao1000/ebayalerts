@@ -38,7 +38,6 @@ export default class MyAlertsComponent extends Component {
     //var data = this.getAlerts();
     //this.getAlerts();
 
-
     const classes = this.props;
     return (
       <Grid item xs={10}>
@@ -61,10 +60,19 @@ export default class MyAlertsComponent extends Component {
                     </TableCell>
                     <TableCell numeric>{item.date_created}</TableCell>
                     <TableCell numeric>{item.interval}</TableCell>
-                    <TableCell numeric>{item.interval ? "Yes" : "No"}</TableCell>
+                    <TableCell numeric>{item.active ? "Yes" : "No"}</TableCell>
                   </TableRow>
                 );
               })}
+              <TableRow>
+                <TableCell>
+                </TableCell>
+                <TableCell numeric></TableCell>
+                <TableCell numeric></TableCell>
+                <TableCell numeric>
+                  <Button color="primary" onClick={e=>this.props.history.push('/addalert')}>+Add</Button>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </Paper>

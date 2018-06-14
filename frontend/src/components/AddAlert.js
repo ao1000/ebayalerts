@@ -25,13 +25,14 @@ export default class AddAlertComponent extends Component {
 
   async postAlert(){
     var result = await this.http.addAlert(this.state);
-    console.log(result);
+    if(result.is_active){
+      this.props.history.push('/myalerts');
+    }
   }
 
   render(){
     const classes = this.props;
     return (
-      <Grid container justify="center" alignItems="center">
         <Grid item xs={6}>
           <Card>
             <CardContent>
@@ -75,7 +76,6 @@ export default class AddAlertComponent extends Component {
             </CardActions>
           </Card>
         </Grid>
-      </Grid>
     )
   }
 

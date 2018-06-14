@@ -9,7 +9,8 @@ from ebaysdk.finding import Connection
 import pprint
 from django.db import IntegrityError
 from django.db import transaction
-from .celery import *
+# from eap.celery import app as celery_app
+# from .tasks import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -19,16 +20,22 @@ class UserViewSet(viewsets.ModelViewSet):
     @list_route(methods=['GET'],url_path="find-email/(.*)")
     def find_email(self,request,email):
         try:
-            u = User.objects.get(email=email)
+            created = False
+            u = User.objects.filter(email=email)
+            if u:
+                u = u[0]
+            else:
+                u = User.objects.create(email=email)
+                created = status.HTTP_201_CREATED
             s = UserSerializer(u)
-            return Response(s.data,status=status.HTTP_200_OK)
+            return Response(s.data,status=created or status.HTTP_200_OK)
         except Exception as e:
             traceback.print_exc()
             return Response({"error": "User not found"},status=status.HTTP_406_NOT_ACCEPTABLE)
 
     @list_route(methods=['GET'],url_path="test")
     def test(self,request):
-        send_email.delay()
+        celery_app.add_periodic_task(5.0, other_test.s('hello from view'), name='add every 10')
         return Response("Celery signal dispatched")
 
 
@@ -40,7 +47,13 @@ class AlertViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def create(self,request):
         try:
-            return super(AlertViewSet,self).create(request)
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid()
+            alert = serializer.save()
+            new_periodic_task.delay(alert)
+            return Response(serializer.validated_data,status=status.HTTP_201_CREATED)
+            #return super(AlertViewSet,self).create(request)
+
             # make sure at least one result is returned by api call
             """
             api = Connection(domain="svcs.sandbox.ebay.com", appid='AousOmra-alerts-SBX-467ac8c8b-7db12fb6', config_file=None)

@@ -22,13 +22,18 @@ export default class MainComponent extends Component {
     }
   }
 
+  logout(){
+    localStorage.removeItem("user");
+    this.props.history.push('/login');
+  }
+
   render() {
     const classes = this.props;
 
     return (
       <div className={classes.root}>
-           <AppBarComponent auth={true}></AppBarComponent>
-           <Grid container className={classes.root} spacing={16}>
+           <AppBarComponent logout={this.logout.bind(this)} check_login={this.check_login.bind(this)}></AppBarComponent>
+           <Grid container className={classes.root} justify="center" alignItems="center" spacing={16}>
             <Switch>
               <Route path='/addalert' component={AddAlertComponent} />
               <Route path='/myalerts' component={MyAlertsComponent} />

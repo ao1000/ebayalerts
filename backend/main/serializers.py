@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 class AlertSerializer(serializers.ModelSerializer):
     class Meta:
         model = Alert
-        fields = ( 'user_email','user_id', 'search_phrase', 'date_created','is_active','interval')
-        
+        fields = ( 'id','user_email','user_id', 'search_phrase', 'date_created','is_active','interval')
+
     user_id = serializers.IntegerField(write_only=True)
     user_email = serializers.CharField(source="user.email",read_only=True)
